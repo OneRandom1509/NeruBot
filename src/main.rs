@@ -1,4 +1,7 @@
-use commands::verify;
+use std::sync::Arc;
+
+use commands::{ping, verify};
+use serenity::all::ShardManager;
 use serenity::model::prelude::*;
 use serenity::prelude::*;
 
@@ -14,6 +17,9 @@ async fn message(ctx: &Context, msg: Message) -> Result<(), serenity::Error> {
             "verify" => {
                 verify::verify(ctx, msg, channel_id, guild_id).await?;
             }
+            "ping" => {
+                ping::ping(ctx, msg).await?;
+            }
             _ => {}
         }
     }
@@ -28,14 +34,27 @@ impl EventHandler for Handler {
     }
 }
 
+pub struct ShardManagerContainer;
+impl TypeMapKey for ShardManagerContainer {
+    type Value = Arc<ShardManager>;
+}
+
 #[tokio::main]
 async fn main() {
     let token = std::env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
-    let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
+    let intents = GatewayIntents::all();
 
     let mut client = Client::builder(token, intents)
         .event_handler(Handler)
         .await
         .unwrap();
-    client.start().await.unwrap();
+
+    {
+        let mut data = client.data.write().await;
+        data.insert::<ShardManagerContainer>(Arc::clone(&client.shard_manager));
+    }
+
+    if let Err(why) = client.start().await {
+        println!("Err with client: {:?}", why);
+    }
 }

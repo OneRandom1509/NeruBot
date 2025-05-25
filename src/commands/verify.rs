@@ -1,6 +1,7 @@
 use serenity::all::{
-    ChannelId, Context, CreateButton, CreateChannel, CreateEmbed, CreateInteractionResponse,
-    CreateInteractionResponseMessage, CreateMessage, EmojiId, GuildId, Message,
+    ChannelId, Colour, Context, CreateButton, CreateChannel, CreateEmbed,
+    CreateInteractionResponse, CreateInteractionResponseMessage, CreateMessage, EmojiId, GuildId,
+    Message,
 };
 
 pub async fn verify(
@@ -19,6 +20,7 @@ pub async fn verify(
                     .button(CreateButton::new("button1").emoji(EmojiId::new(1369536103354466384)))
                     .embed(
                         CreateEmbed::new()
+                            .colour(Colour::from_rgb(255, 220, 12))
                             .title("Verify Yourself!")
                             .description("Click the button to get verified!"),
                     ),
