@@ -1,6 +1,6 @@
 use serenity::all::{
     ChannelId, Context, CreateButton, CreateChannel, CreateEmbed, CreateInteractionResponse,
-    CreateInteractionResponseMessage, CreateMessage, EmojiId, GuildId, Message, Permissions,
+    CreateInteractionResponseMessage, CreateMessage, EmojiId, GuildId, Message,
 };
 
 pub async fn verify(
