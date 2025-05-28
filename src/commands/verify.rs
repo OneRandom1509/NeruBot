@@ -4,12 +4,14 @@ use serenity::all::{
     Message,
 };
 
+use crate::SerenityResult;
+
 pub async fn verify(
     ctx: &Context,
     msg: Message,
     channel_id: ChannelId,
     guild_id: GuildId,
-) -> Result<(), serenity::Error> {
+) -> SerenityResult {
     let author_permissions = msg.author_permissions(&ctx).unwrap();
 
     if author_permissions.administrator() {
@@ -77,6 +79,7 @@ pub async fn verify(
                 &ctx.http,
                 CreateMessage::new().embed(
                     CreateEmbed::new()
+                        .colour(Colour::from_rgb(255, 220, 12))
                         .title("Permissions error")
                         .description("You need to have admin perms to invoke that command!"),
                 ),

@@ -1,26 +1,40 @@
 use std::sync::Arc;
 
-use commands::{ping, verify};
+use commands::{http_cat, ping, verify};
 use serenity::all::ShardManager;
 use serenity::model::prelude::*;
 use serenity::prelude::*;
 
 pub mod commands;
 
-async fn message(ctx: &Context, msg: Message) -> Result<(), serenity::Error> {
+pub type SerenityResult = Result<(), SerenityError>;
+
+async fn message(ctx: &Context, msg: Message) -> SerenityResult {
     let channel_id = msg.channel_id;
     // the default guild id is 1234 (which is not a real guild)
     let guild_id = msg.guild_id.unwrap_or(GuildId::new(1234));
 
     if let Some(args) = msg.content.strip_prefix("!") {
-        match args {
+        let command: Vec<&str> = args.split(' ').collect();
+        match *command.get(0).unwrap() {
             "verify" => {
                 verify::verify(ctx, msg, channel_id, guild_id).await?;
             }
             "ping" => {
                 ping::ping(ctx, msg).await?;
             }
-            _ => {}
+            "http" => {
+                if let Some(number) = command.get(1) {
+                    http_cat::http(ctx, msg.clone(), number.parse::<u32>().unwrap_or(400)).await?;
+                } else {
+                    msg.reply_ping(ctx, "Please specify an http status code :3")
+                        .await?;
+                }
+            }
+            _ => {
+                msg.reply_ping(ctx, "There's no command like that idiot!")
+                    .await?;
+            }
         }
     }
     Ok(())

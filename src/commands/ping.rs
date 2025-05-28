@@ -1,7 +1,7 @@
-use crate::ShardManagerContainer;
+use crate::{SerenityResult, ShardManagerContainer};
 use serenity::all::{Colour, Context, CreateEmbed, CreateMessage, Message};
 
-pub async fn ping(ctx: &Context, msg: Message) -> Result<(), serenity::Error> {
+pub async fn ping(ctx: &Context, msg: Message) -> SerenityResult {
     let data = ctx.data.read().await;
 
     let shard_manager = match data.get::<ShardManagerContainer>() {
