@@ -1,9 +1,8 @@
-use serenity::all::{Context, Message};
+use crate::{Context, Error};
 
-use crate::SerenityResult;
-
-pub async fn http(ctx: &Context, msg: Message, status_code: u32) -> SerenityResult {
-    msg.reply(ctx, format!("https://http.cat/{}", status_code))
-        .await?;
+#[poise::command(prefix_command, slash_command)]
+pub async fn http(ctx: Context<'_>, status_code: Option<u32>) -> Result<(), Error> {
+    let status_code = status_code.unwrap_or(400);
+    ctx.say(format!("https://http.cat/{status_code}")).await?;
     Ok(())
 }
